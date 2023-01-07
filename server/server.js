@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { Midi } = require('@tonejs/midi')
 
 const app = express();
 
@@ -8,6 +9,11 @@ app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(require('body-parser').raw());
+
+app.set('views', path.join(__dirname, '..', 'public'));
+app.set('view engine', 'html');
+app.engine('html', require('ejs').renderFile);
 
 app.get('/', (req, res) => {
 	res.status(200);
@@ -22,19 +28,20 @@ app.post('/midi', (req, res) => {
 			console.error(err);
 			return;
 		}
+
 		const fileCount = files.filter((file) => {
 			return fs.statSync(path.join(__dirname, 'midis', file)).isFile();
 		}).length;
 		const id = (fileCount + 1).toString();
-		fs.writeFile(path.join(__dirname, 'midis', `${id}.mid`), decodeURIComponent(escape(atob(req.body))), (err) => { if (err) console.error(err); });
-		console.log('Uploaded file ID', id);
-		res.send({id: id});
-	})
+
+		fs.writeFile(path.join(__dirname, 'midis', `${id}.mid`), req.body, (err) => { if (err) console.error(err); });
+		res.send({ id: id });
+	});
 });
 
 app.get('/visualization/:id', (req, res) => {
 	res.status(200);
-	res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+	res.render('visualization', { data: new Midi(fs.readFileSync(path.join(__dirname, 'midis', `${req.params.id}.mid`))) });
 });
 
 app.listen(3000, () => {

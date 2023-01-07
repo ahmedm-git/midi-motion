@@ -15,16 +15,14 @@ class App extends React.Component<any, any> {
     }
 
     onUpload = async () => {
-        const data = await this.state.file.text();
-        const base64Data = btoa(unescape(encodeURIComponent(data)));
-        console.log(data);
+        const data: ArrayBuffer = await this.state.file.arrayBuffer();
         fetch('/midi', {
             method: 'POST',
             headers: {
-                'Content-Type': 'text/plain',
-                'Content-Length': base64Data.length.toString()
+                'Content-Type': 'application/octet-stream',
+                'Content-Length': data.byteLength.toString()
             },
-            body: base64Data
+            body: data
         }).then(res => res.json())
         .then(res => {
             window.location.replace(`/visualization/${res.id}`);
@@ -33,11 +31,11 @@ class App extends React.Component<any, any> {
 
     public render() {
         var buttonStyle = {
-            margin: 25
+            margin: 50
         };
 
         return (
-            <div style={{margin: 'auto'}}>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <input
                     style={{ display: 'none' }}
                     id='contained-button-file'

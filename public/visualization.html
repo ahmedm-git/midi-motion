@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>My Web Server</title>
+    <base href="/">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>window.localStorage.setItem('data', JSON.stringify(<%- JSON.stringify(data) %>));</script>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
+
