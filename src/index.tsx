@@ -8,7 +8,7 @@ import { Typography } from '@mui/material';
 function renderApp() {
 	return (
 		<React.StrictMode>
-			<center><Typography variant="h1">MIDI Visualization</Typography></center>
+			<center><Typography variant="h1">MIDI Motion</Typography></center>
 			<BrowserRouter>
 				<Routes>
 					<Route path='/' element={<App />} />
